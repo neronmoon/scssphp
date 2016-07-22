@@ -110,6 +110,7 @@ class Compiler
     protected $importedFiles = [];
     protected $userFunctions = [];
     protected $registeredVars = [];
+    protected $lockedVars = [];
     protected $registeredFeatures = [
         'extend-selector-pseudoclass' => false,
         'at-error'                    => true,
@@ -235,6 +236,17 @@ class Compiler
         }
 
         return false;
+    }
+
+    protected function isLocked($var)
+    {
+        return in_array($var, $this->lockedVars);
+    }
+
+    protected function lockVariables($var)
+    {
+        $var = (array) $var;
+        $this->lockedVars = array_merge($this->lockedVars, $var);
     }
 
     /**
@@ -1978,8 +1990,10 @@ class Compiler
 
             case Type::T_VARIABLE:
                 list(, $name) = $value;
-
-                return $this->reduce($this->get($name));
+                if (!$this->isLocked($name)) {
+                    return $this->reduce($this->get($name));
+                }
+                return $value;
 
             case Type::T_LIST:
                 foreach ($value[2] as &$item) {
@@ -2502,6 +2516,9 @@ class Compiler
         list($type) = $value;
 
         switch ($type) {
+            case Type::T_VARIABLE:
+                return '$' . $value[1];
+
             case Type::T_KEYWORD:
                 return $value[1];
 
@@ -3409,7 +3426,17 @@ class Compiler
             }
         }
 
-        $returnValue = call_user_func($f, $sorted, $kwargs);
+        $call = true;
+        foreach ($sorted as $arg){
+            if (is_array($arg) && $arg[0] === Type::T_VARIABLE && $this->isLocked($arg[1])) {
+                $call = false;
+                $returnValue = $sorted[0];
+                break;
+            }
+        }
+        if ($call) {
+            $returnValue = call_user_func($f, $sorted, $kwargs);
+        }
 
         if (! isset($returnValue)) {
             return false;
@@ -4835,7 +4862,7 @@ class Compiler
                     return 'color';
                 }
 
-                // fall-thru
+            // fall-thru
             case Type::T_FUNCTION:
                 return 'string';
 
@@ -4844,7 +4871,7 @@ class Compiler
                     return 'arglist';
                 }
 
-                // fall-thru
+            // fall-thru
             default:
                 return $value[0];
         }

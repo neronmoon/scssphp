@@ -1,4 +1,4 @@
-# scssphp
+# scssphp (with variables locking)
 ### <http://leafo.github.io/scssphp>
 
 [![Build](https://travis-ci.org/leafo/scssphp.svg?branch=master)](http://travis-ci.org/leafo/scssphp)
@@ -7,6 +7,10 @@
 `scssphp` is a compiler for SCSS written in PHP.
 
 Checkout the homepage, <http://leafo.github.io/scssphp>, for directions on how to use.
+## Variable locking
+
+You may use lockVariables([<variables>]) and they wouldn't compile
+
 
 ## Running Tests
 

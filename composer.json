@@ -1,5 +1,5 @@
 {
-    "name": "leafo/scssphp",
+    "name": "neronmoon/scssphp",
     "type": "library",
     "description": "scssphp is a compiler for SCSS written in PHP.",
     "keywords": ["css", "stylesheet", "scss", "sass", "less"],
@@ -12,6 +12,11 @@
             "name": "Leaf Corcoran",
             "email": "leafot@gmail.com",
             "homepage": "http://leafo.net"
+        },
+        {
+            "name": "Vitaliy Krasnoperov",
+            "email": "alistar.neron@gmail.com",
+            "homepage": "https://vkrasnoperov.me"
         }
     ],
     "autoload": {
